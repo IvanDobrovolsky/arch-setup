@@ -1,0 +1,13 @@
+# arch-setup: custom bash config
+# Source this from ~/.bashrc
+
+# ── Functions ────────────────────────────────────────────────────────
+
+# Copy file contents or piped input to clipboard
+copy() {
+  if [ -t 0 ] && [ -n "${1:-}" ]; then
+    wl-copy < "$1"
+  else
+    wl-copy
+  fi
+}

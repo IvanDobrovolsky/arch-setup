@@ -7,5 +7,6 @@ echo "==> Starting arch-setup..."
 
 "$SCRIPT_DIR/scripts/debloat.sh"
 "$SCRIPT_DIR/scripts/install.sh"
+"$SCRIPT_DIR/scripts/shell.sh"
 
 echo "==> Done!"
