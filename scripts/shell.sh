@@ -15,4 +15,9 @@ else
   echo "" >> ~/.bashrc
 fi
 
+# Lazygit config
+echo "  Linking lazygit config..."
+mkdir -p ~/.config/lazygit
+ln -sf "$DOTFILES_DIR/lazygit/config.yml" ~/.config/lazygit/config.yml
+
 echo "==> Shell config complete. Restart your shell or run: source ~/.bashrc"

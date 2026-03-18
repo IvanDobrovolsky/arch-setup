@@ -33,6 +33,17 @@ opt.clipboard = "unnamedplus"
 opt.splitright = true
 opt.splitbelow = true
 
+-- Auto-save
+opt.autowriteall = true
+vim.api.nvim_create_autocmd({ "InsertLeave", "TextChanged", "FocusLost", "BufLeave" }, {
+  callback = function(ev)
+    local buf = ev.buf
+    if vim.bo[buf].modified and vim.bo[buf].buftype == "" and vim.fn.bufname(buf) ~= "" then
+      vim.api.nvim_buf_call(buf, function() vim.cmd("silent! write") end)
+    end
+  end,
+})
+
 -- Leader
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "

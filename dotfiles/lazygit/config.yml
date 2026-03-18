@@ -1,0 +1,8 @@
+os:
+  editPreset: "nvim"
+notARepository: "skip"
+gui:
+  fetchOnLogRefresh: true
+refresher:
+  refreshInterval: 1
+  fetchInterval: 60
