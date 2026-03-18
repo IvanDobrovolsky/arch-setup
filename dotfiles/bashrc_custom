@@ -14,15 +14,15 @@ copy() {
 
 # Open tmux working directory layout: nvim, claude, lazygit, terminal
 twd() {
-  local dir="${PWD}"
+  local dir
+  dir="$(cd "${1:-.}" && pwd)"
   local session_name
   session_name="$(basename "$dir" | tr '.:' '--')"
 
   # Start tmux if not already in it
   if [[ -z "${TMUX:-}" ]]; then
-    tmux new-session -d -s "$session_name" -c "$dir"
-    tmux send-keys -t "$session_name" "twd" C-m
-    tmux attach-session -t "$session_name"
+    tmux new-session -s "$session_name" -c "$dir" \
+      "bash --rcfile <(echo 'source ~/.bashrc; twd \"$dir\"')"
     return
   fi
 
@@ -30,21 +30,21 @@ twd() {
 
   tmux rename-window -t "$editor_pane" "$(basename "$dir")"
 
-  # Split right 35% for claude
+  # 1. Split left/right: editor (65%) | claude (35%)
   local top_right
   top_right=$(tmux split-window -h -l 35% -t "$editor_pane" -c "$dir" -P -F '#{pane_id}')
-  tmux send-keys -t "$top_right" "cx" C-m
 
-  # Split bottom 25% from editor pane for lazygit
-  local bottom_left
-  bottom_left=$(tmux split-window -v -l 25% -t "$editor_pane" -c "$dir" -P -F '#{pane_id}')
-  tmux send-keys -t "$bottom_left" "lazygit" C-m
-
-  # Split bottom 25% from claude pane for terminal
+  # 2. Split claude pane top/bottom: claude (75%) | terminal (25%)
   tmux split-window -v -l 25% -t "$top_right" -c "$dir"
 
-  # Start nvim in editor pane
-  tmux send-keys -t "$editor_pane" "$EDITOR ." C-m
+  # 3. Split editor pane top/bottom: nvim (75%) | lazygit (25%)
+  local bottom_left
+  bottom_left=$(tmux split-window -v -l 25% -t "$editor_pane" -c "$dir" -P -F '#{pane_id}')
+
+  # Start apps
+  tmux send-keys -t "$editor_pane" "cd '$dir' && $EDITOR ." C-m
+  tmux send-keys -t "$top_right" "cd '$dir' && cx" C-m
+  tmux send-keys -t "$bottom_left" "cd '$dir' && lazygit" C-m
 
   # Focus nvim
   tmux select-pane -t "$editor_pane"
