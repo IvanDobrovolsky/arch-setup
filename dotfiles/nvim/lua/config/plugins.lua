@@ -90,7 +90,18 @@ end
 vim.lsp.config("lua_ls", {
   settings = { Lua = { diagnostics = { globals = { "vim" } } } },
 })
-vim.lsp.enable(vim.list_extend(servers, { "lua_ls" }))
+vim.lsp.config("eslint", {})
+vim.lsp.enable(vim.list_extend(servers, { "lua_ls", "eslint" }))
+
+-- ESLint: fix all on save
+vim.api.nvim_create_autocmd("BufWritePre", {
+  callback = function(ev)
+    local clients = vim.lsp.get_clients({ bufnr = ev.buf, name = "eslint" })
+    if #clients > 0 then
+      vim.cmd("silent! EslintFixAll")
+    end
+  end,
+})
 
 -- Mason (LSP installer)
 local mason_ok, mason = pcall(require, "mason")
@@ -101,7 +112,7 @@ if mason_ok then
     mason_lsp.setup({
       ensure_installed = {
         "ts_ls", "html", "cssls", "bashls",
-        "lua_ls", "pyright", "rust_analyzer", "jsonls",
+        "lua_ls", "pyright", "rust_analyzer", "jsonls", "eslint",
       },
     })
   end

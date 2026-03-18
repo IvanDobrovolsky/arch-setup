@@ -44,6 +44,22 @@ vim.api.nvim_create_autocmd({ "InsertLeave", "TextChanged", "FocusLost", "BufLea
   end,
 })
 
+-- Diagnostics
+vim.diagnostic.config({
+  virtual_text = { prefix = "●" },
+  signs = {
+    text = {
+      [vim.diagnostic.severity.ERROR] = "✘",
+      [vim.diagnostic.severity.WARN]  = "▲",
+      [vim.diagnostic.severity.HINT]  = "⚑",
+      [vim.diagnostic.severity.INFO]  = "»",
+    },
+  },
+  underline = true,
+  update_in_insert = false,
+  severity_sort = true,
+})
+
 -- Leader
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
