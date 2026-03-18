@@ -11,3 +11,32 @@ copy() {
     wl-copy
   fi
 }
+
+# Open tmux working directory layout: nvim, claude, lazygit, terminal
+twd() {
+  [[ -z $TMUX ]] && { echo "You must be in tmux to use twd."; return 1; }
+
+  local dir="${PWD}"
+  local editor_pane="$TMUX_PANE"
+
+  tmux rename-window -t "$editor_pane" "$(basename "$dir")"
+
+  # Split bottom 25% for lazygit
+  local bottom_left
+  bottom_left=$(tmux split-window -v -l 25% -t "$editor_pane" -c "$dir" -P -F '#{pane_id}')
+  tmux send-keys -t "$bottom_left" "lazygit" C-m
+
+  # Split right 35% from editor pane for claude
+  local top_right
+  top_right=$(tmux split-window -h -l 35% -t "$editor_pane" -c "$dir" -P -F '#{pane_id}')
+  tmux send-keys -t "$top_right" "cx" C-m
+
+  # Split bottom 25% from claude pane for terminal
+  tmux split-window -v -l 25% -t "$top_right" -c "$dir"
+
+  # Start nvim in editor pane
+  tmux send-keys -t "$editor_pane" "$EDITOR ." C-m
+
+  # Focus nvim
+  tmux select-pane -t "$editor_pane"
+}
