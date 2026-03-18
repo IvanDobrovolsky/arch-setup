@@ -34,7 +34,7 @@ Personal Arch Linux dotfiles and system setup, running [Omarchy](https://omarchy
 ## Usage
 
 ```bash
-git clone https://github.com/id/arch-setup.git
+git clone https://github.com/IvanDobrovolsky/arch-setup.git
 cd arch-setup
 ./setup.sh
 ```
