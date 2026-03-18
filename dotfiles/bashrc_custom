@@ -21,8 +21,13 @@ twd() {
 
   # Start tmux if not already in it
   if [[ -z "${TMUX:-}" ]]; then
-    tmux new-session -s "$session_name" -c "$dir" \
-      "bash --rcfile <(echo 'source ~/.bashrc; twd \"$dir\"')"
+    if tmux has-session -t "$session_name" 2>/dev/null; then
+      tmux attach-session -t "$session_name"
+    else
+      tmux new-session -d -s "$session_name" -c "$dir"
+      tmux send-keys -t "$session_name" "twd '$dir'" C-m
+      tmux attach-session -t "$session_name"
+    fi
     return
   fi
 
