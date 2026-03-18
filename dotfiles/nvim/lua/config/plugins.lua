@@ -49,8 +49,16 @@ if tree_ok then
     view = { width = 30 },
     filters = { dotfiles = false },
     git = { enable = true, ignore = false },
+    renderer = {
+      highlight_git = "name",
+      icons = {
+        git_placement = "after",
+        show = { git = true },
+      },
+    },
   })
   vim.keymap.set("n", "<leader>e", "<cmd>NvimTreeToggle<cr>", { desc = "File explorer" })
+  vim.api.nvim_set_hl(0, "NvimTreeGitIgnoredHL", { fg = "#6c7086", italic = true })
 end
 
 -- Undotree
