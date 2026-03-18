@@ -6,23 +6,8 @@ if ok then
 end
 
 -- Treesitter
-local ts_ok, ts = pcall(require, "nvim-treesitter.configs")
-if ts_ok then
-  ts.setup({
-    ensure_installed = {
-      "typescript", "tsx", "javascript",
-      "html", "css",
-      "bash",
-      "lua",
-      "python",
-      "rust",
-      "json", "yaml", "toml",
-      "markdown",
-    },
-    highlight = { enable = true },
-    indent = { enable = true },
-  })
-end
+-- Parsers: install via :TSInstall tsx typescript javascript html css bash python rust json yaml toml
+vim.treesitter.start = vim.treesitter.start or function() end
 
 -- Treesitter Textobjects
 local tso_ok, tso = pcall(require, "nvim-treesitter-textobjects")
