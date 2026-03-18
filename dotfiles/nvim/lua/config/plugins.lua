@@ -21,6 +21,38 @@ if ts_ok then
     },
     highlight = { enable = true },
     indent = { enable = true },
+    textobjects = {
+      select = {
+        enable = true,
+        lookahead = true,
+        keymaps = {
+          ["af"] = { query = "@function.outer", desc = "Select around function" },
+          ["if"] = { query = "@function.inner", desc = "Select inside function" },
+          ["ac"] = { query = "@class.outer", desc = "Select around class" },
+          ["ic"] = { query = "@class.inner", desc = "Select inside class" },
+          ["aa"] = { query = "@parameter.outer", desc = "Select around argument" },
+          ["ia"] = { query = "@parameter.inner", desc = "Select inside argument" },
+          ["ai"] = { query = "@conditional.outer", desc = "Select around conditional" },
+          ["ii"] = { query = "@conditional.inner", desc = "Select inside conditional" },
+          ["al"] = { query = "@loop.outer", desc = "Select around loop" },
+          ["il"] = { query = "@loop.inner", desc = "Select inside loop" },
+        },
+      },
+      move = {
+        enable = true,
+        set_jumps = true,
+        goto_next_start = {
+          ["]f"] = "@function.outer",
+          ["]c"] = "@class.outer",
+          ["]a"] = "@parameter.inner",
+        },
+        goto_previous_start = {
+          ["[f"] = "@function.outer",
+          ["[c"] = "@class.outer",
+          ["[a"] = "@parameter.inner",
+        },
+      },
+    },
   })
 end
 
@@ -102,6 +134,51 @@ vim.api.nvim_create_autocmd("BufWritePre", {
     end
   end,
 })
+
+-- Autocompletion
+local cmp_ok, cmp = pcall(require, "cmp")
+if cmp_ok then
+  local luasnip_ok, luasnip = pcall(require, "luasnip")
+  cmp.setup({
+    snippet = {
+      expand = function(args)
+        if luasnip_ok then luasnip.lsp_expand(args.body) end
+      end,
+    },
+    mapping = cmp.mapping.preset.insert({
+      ["<C-b>"] = cmp.mapping.scroll_docs(-4),
+      ["<C-f>"] = cmp.mapping.scroll_docs(4),
+      ["<C-Space>"] = cmp.mapping.complete(),
+      ["<C-e>"] = cmp.mapping.abort(),
+      ["<CR>"] = cmp.mapping.confirm({ select = true }),
+      ["<Tab>"] = cmp.mapping(function(fallback)
+        if cmp.visible() then
+          cmp.select_next_item()
+        elseif luasnip_ok and luasnip.expand_or_jumpable() then
+          luasnip.expand_or_jump()
+        else
+          fallback()
+        end
+      end, { "i", "s" }),
+      ["<S-Tab>"] = cmp.mapping(function(fallback)
+        if cmp.visible() then
+          cmp.select_prev_item()
+        elseif luasnip_ok and luasnip.jumpable(-1) then
+          luasnip.jump(-1)
+        else
+          fallback()
+        end
+      end, { "i", "s" }),
+    }),
+    sources = cmp.config.sources({
+      { name = "nvim_lsp" },
+      { name = "luasnip" },
+    }, {
+      { name = "buffer" },
+      { name = "path" },
+    }),
+  })
+end
 
 -- Mason (LSP installer)
 local mason_ok, mason = pcall(require, "mason")
