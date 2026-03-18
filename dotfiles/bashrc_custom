@@ -14,9 +14,18 @@ copy() {
 
 # Open tmux working directory layout: nvim, claude, lazygit, terminal
 twd() {
-  [[ -z $TMUX ]] && { echo "You must be in tmux to use twd."; return 1; }
-
   local dir="${PWD}"
+  local session_name
+  session_name="$(basename "$dir" | tr '.:' '--')"
+
+  # Start tmux if not already in it
+  if [[ -z "${TMUX:-}" ]]; then
+    tmux new-session -d -s "$session_name" -c "$dir"
+    tmux send-keys -t "$session_name" "twd" C-m
+    tmux attach-session -t "$session_name"
+    return
+  fi
+
   local editor_pane="$TMUX_PANE"
 
   tmux rename-window -t "$editor_pane" "$(basename "$dir")"
