@@ -30,15 +30,15 @@ twd() {
 
   tmux rename-window -t "$editor_pane" "$(basename "$dir")"
 
-  # Split bottom 25% for lazygit
-  local bottom_left
-  bottom_left=$(tmux split-window -v -l 25% -t "$editor_pane" -c "$dir" -P -F '#{pane_id}')
-  tmux send-keys -t "$bottom_left" "lazygit" C-m
-
-  # Split right 35% from editor pane for claude
+  # Split right 35% for claude
   local top_right
   top_right=$(tmux split-window -h -l 35% -t "$editor_pane" -c "$dir" -P -F '#{pane_id}')
   tmux send-keys -t "$top_right" "cx" C-m
+
+  # Split bottom 25% from editor pane for lazygit
+  local bottom_left
+  bottom_left=$(tmux split-window -v -l 25% -t "$editor_pane" -c "$dir" -P -F '#{pane_id}')
+  tmux send-keys -t "$bottom_left" "lazygit" C-m
 
   # Split bottom 25% from claude pane for terminal
   tmux split-window -v -l 25% -t "$top_right" -c "$dir"
