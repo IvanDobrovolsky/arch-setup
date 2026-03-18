@@ -67,24 +67,22 @@ local ll_ok, lualine = pcall(require, "lualine")
 if ll_ok then
   lualine.setup({
     options = {
-      theme = "catppuccin",
-      section_separators = "",
-      component_separators = "",
+      theme = "auto",
+      section_separators = { left = "", right = "" },
+      component_separators = { left = "", right = "" },
     },
   })
 end
 
--- LSP
-local lsp_ok, lspconfig = pcall(require, "lspconfig")
-if lsp_ok then
-  local servers = { "ts_ls", "html", "cssls", "bashls", "pyright", "rust_analyzer", "jsonls" }
-  for _, server in ipairs(servers) do
-    pcall(function() lspconfig[server].setup({}) end)
-  end
-  lspconfig.lua_ls.setup({
-    settings = { Lua = { diagnostics = { globals = { "vim" } } } },
-  })
+-- LSP (vim.lsp.config for nvim 0.11+)
+local servers = { "ts_ls", "html", "cssls", "bashls", "pyright", "rust_analyzer", "jsonls" }
+for _, server in ipairs(servers) do
+  vim.lsp.config(server, {})
 end
+vim.lsp.config("lua_ls", {
+  settings = { Lua = { diagnostics = { globals = { "vim" } } } },
+})
+vim.lsp.enable(vim.list_extend(servers, { "lua_ls" }))
 
 -- Mason (LSP installer)
 local mason_ok, mason = pcall(require, "mason")
