@@ -87,6 +87,7 @@ local tree_ok, nvimtree = pcall(require, "nvim-tree")
 if tree_ok then
   nvimtree.setup({
     view = { width = 30 },
+    update_focused_file = { enable = true, update_root = true },
     filters = { dotfiles = false },
     git = { enable = true, ignore = false },
     renderer = {
