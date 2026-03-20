@@ -1,7 +1,34 @@
 -- Catppuccin theme
 local ok, catppuccin = pcall(require, "catppuccin")
 if ok then
-  catppuccin.setup({ transparent_background = true })
+  catppuccin.setup({
+    flavour = "mocha",
+    transparent_background = true,
+    dim_inactive = { enabled = true, percentage = 0.20 },
+    styles = {
+      comments = { "italic" },
+      keywords = { "italic", "bold" },
+      functions = { "bold" },
+      types = { "bold" },
+    },
+    integrations = {
+      cmp = true,
+      gitsigns = true,
+      nvimtree = true,
+      treesitter = true,
+      telescope = { enabled = true },
+      mason = true,
+      native_lsp = {
+        enabled = true,
+        underlines = {
+          errors = { "undercurl" },
+          warnings = { "undercurl" },
+          hints = { "underdouble" },
+          information = { "underdotted" },
+        },
+      },
+    },
+  })
   vim.cmd.colorscheme("catppuccin")
 end
 
@@ -88,7 +115,7 @@ local ll_ok, lualine = pcall(require, "lualine")
 if ll_ok then
   lualine.setup({
     options = {
-      theme = "auto",
+      theme = "catppuccin",
       section_separators = { left = "", right = "" },
       component_separators = { left = "", right = "" },
     },
